@@ -6,9 +6,7 @@ from tqdm import tqdm
 from pebblo.app.config.config import load_config
 import argparse
 
-
 config_details = {}
-
 
 def start():
     """Entry point for pebblo-server."""
