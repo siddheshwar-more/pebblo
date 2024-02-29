@@ -13,8 +13,6 @@ on:
       - reopened
       - synchronize
       - ready_for_review
-    
-  workflow_dispatch:
           
 env:
   PYTHON_VERSION: ${{ github.event.inputs.python_version || '3.11.x' }}
