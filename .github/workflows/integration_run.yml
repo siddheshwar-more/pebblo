@@ -1,11 +1,18 @@
 name: Run Pebblo Integration Tests
 
 on:
-  # schedule:
-  #   - cron: '30 2 * * *'
-  #   - cron: '30 14 * * *'
-    
-  workflow_dispatch:
+  workflow_dispatch: # Activate this workflow manually
+  push:
+    branches:
+      - main
+      - sid-int-new
+      - "v[0-9].*[0-9].x"
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
           
 env:
   PYTHON_VERSION: ${{ github.event.inputs.python_version || '3.11.x' }}
