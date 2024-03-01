@@ -88,7 +88,7 @@ jobs:
 
       - name: Check logs for Pebblo Report 
         run: |
-          if grep -q "Pebblo Logger - INFO - PDF report generated at : /home/runner/.pebblo/" run_pebblo.txt; then
+          if grep -q "INFO:     PDF report generated, please check path : /home/runner/.pebblo/" run_pebblo.txt; then
             echo "Report Generated Successfully."
           else
             echo "Unexpected issue detected at running sample app."
