@@ -100,5 +100,5 @@ jobs:
         run: |
            cd /home/runner/.pebblo/PebbloAutomation_Testing_CSVLoader
            export SLACK_CH="C06GVNEPJ1W"
-           curl -F file=@pebblo_report.pdf https://slack.com/api/files.upload -H "Authorization: Bearer $SLACK_TOKEN" -F channels=$SLACK_CH -F "initial_comment=Pebblo Nightly Report"'
+           curl -F file=@pebblo_report.pdf https://slack.com/api/files.upload -H "Authorization: Bearer $SLACK_TOKEN" -F channels=$SLACK_CH -F "initial_comment=Pebblo Nightly Report"
 
