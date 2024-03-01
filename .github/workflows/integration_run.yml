@@ -95,6 +95,14 @@ jobs:
             cat run_pebblo.txt
             exit 1 
           fi
+      - name: Send custom JSON data to Slack workflow
+        id: slack
+        uses: slackapi/slack-github-action@v1.25.0
+        with:
+          payload-file-path: "/home/runner/.pebblo/PebbloAutomation_Testing_CSVLoader/pebblo_report.pdf"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          
       - name: Copy Report Generated and Download PDF
         run: |
           path=$(grep "Pebblo Logger - INFO - PDF report generated at" run_pebblo.txt | sed 's/INFO: Output file path: //')
