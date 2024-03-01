@@ -42,10 +42,12 @@ jobs:
             echo 'Cool!!! Running Pebblo server...'
             sleep 10
             pebblo > run_pebblo.txt 2>&1 &
-            sleep 60
+            sleep 120
 
       - name: Verify Server Started
         run: |
+          cat run_pebblo.txt
+          
           if grep -q "Uvicorn running on http://localhost:8000 (Press CTRL+C to quit)" run_pebblo.txt; then
             echo "Server started successfully."
           else
