@@ -90,6 +90,7 @@ jobs:
             echo "Report Generated Successfully."
           else
             echo "Unexpected issue detected at running sample app."
+            cat run_pebblo.txt
             exit 1 
           fi
       - name: Copy Report Generated and Download PDF
