@@ -3,33 +3,21 @@ ARG base_image
 
 FROM $build_image AS build-image
 
-ARG DEBIAN_FRONTEND=noninteractive
-ARG haystack_version
+FROM python:3.11 as base
 
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-    build-essential \
-    git
+COPY dist/*.whl .
 
-# Shallow clone Haystack repo, we'll install from the local sources
-RUN git clone --depth=1 --branch=${haystack_version} https://github.com/deepset-ai/haystack.git /opt/haystack
-WORKDIR /opt/haystack
+RUN pip install *.whl
 
-# Use a virtualenv we can copy over the next build stage
-RUN python3 -m venv --system-site-packages /opt/venv
-ENV PATH="/opt/venv/bin:$PATH"
+# Stage 2
+FROM $base_image
 
-# Upgrade setuptools due to https://nvd.nist.gov/vuln/detail/CVE-2022-40897
-RUN pip install --upgrade pip && \
-    pip install --no-cache-dir -U setuptools && \
-    pip install --no-cache-dir .
+RUN mkdir /opt/pebblo /opt/pebblo/log /opt/pebblo/config 
 
-FROM $base_image AS final
+WORKDIR /opt/pebblo
 
-COPY --from=build-image /opt/venv /opt/venv
-COPY --from=deepset/xpdf:latest /opt/pdftotext /usr/local/bin
+COPY --from=base /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
 
-# pdftotext requires fontconfig runtime
-RUN apt-get update && apt-get install -y libfontconfig && rm -rf /var/lib/apt/lists/*
+COPY --from=base /usr/local/bin/pebblo /usr/local/bin/pebblo
 
-ENV PATH="/opt/venv/bin:$PATH"
+ENTRYPOINT ["pebblo"]
