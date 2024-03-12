@@ -5,7 +5,7 @@ FROM $build_image AS build-image
 
 FROM python:3.11 as base
 
-COPY dist/*.whl .
+COPY ../dist/*.whl .
 
 RUN pip install *.whl
 
