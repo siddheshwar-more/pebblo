@@ -10,7 +10,7 @@ RUN apt-get update && \
     git
 
 # Shallow clone Pebblo repo, we'll install from the local sources
-RUN git clone --depth=1 --branch=${pebblo_version} https://github.com/daxa-ai/pebblo.git /opt/pebblo
+RUN git clone --depth=1 --branch=${pebblo_version} git@github.com:daxa-ai/pebblo.git /opt/pebblo
 WORKDIR /opt/pebblo
 
 RUN pip install build
