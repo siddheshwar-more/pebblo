@@ -7,7 +7,7 @@ variable "GITHUB_REF" {
 }
 
 variable "IMAGE_NAME" {
-  default = "daxa-ai/pebblo"
+  default = "sidcd/pebblo"
 }
 
 variable "IMAGE_TAG_SUFFIX" {
