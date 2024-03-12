@@ -26,9 +26,8 @@ target "base" {
   dockerfile = "Dockerfile.base"
   tags = ["${IMAGE_NAME}:base-${IMAGE_TAG_SUFFIX}"]
   args = {
-    build_image = "python:3.11-slim"
-    base_image = "python:3.11-slim"
-    haystack_version = "${PEBBLO_VERSION}"
+    build_image = "python:3.11"
+    base_image = "python:3.11"
   }
   platforms = ["linux/amd64", "linux/arm64"]
 }
