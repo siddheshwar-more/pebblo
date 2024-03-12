@@ -7,7 +7,7 @@ variable "GITHUB_REF" {
 }
 
 variable "IMAGE_NAME" {
-  default = "sidcd/pebblo"
+  default = "pebblo"
 }
 
 variable "IMAGE_TAG_SUFFIX" {
