@@ -2,7 +2,7 @@ ARG build_image
 ARG base_image
 ARG pebblo_version
 
-FROM $build_image AS build-image
+FROM $build_image AS base
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
