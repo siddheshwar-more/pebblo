@@ -59,7 +59,7 @@ jobs:
         uses: docker/bake-action@v4
         env:
           IMAGE_TAG_SUFFIX: ${{ steps.meta.outputs.version }}
-          PEBBLO_VERSION: ${{ steps.meta.outputs.version }}
+          PEBBLO_VERSION: 'v0.1.12'
         with:
           workdir: docker
           targets: base
