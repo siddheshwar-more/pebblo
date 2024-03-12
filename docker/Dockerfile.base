@@ -1,13 +1,22 @@
 ARG build_image
 ARG base_image
+ARG pebblo_version
 
 FROM $build_image AS build-image
 
-FROM python:3.11 as base
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    build-essential \
+    git
 
-COPY ../dist/*.whl .
+# Shallow clone Pebblo repo, we'll install from the local sources
+RUN git clone --depth=1 --branch=${pebblo_version} https://github.com/daxa-ai/pebblo.git /opt/pebblo
+WORKDIR /opt/pebblo
 
-RUN pip install *.whl
+RUN pip install build
+RUN python -m build --wheel
+
+RUN pip install dist/*.whl
 
 # Stage 2
 FROM $base_image
