@@ -28,6 +28,7 @@ target "base" {
   args = {
     build_image = "python:3.11"
     base_image = "python:3.11"
+    pebblo_version = "${PEBBLO_VERSION}"
   }
   platforms = ["linux/amd64", "linux/arm64"]
 }
