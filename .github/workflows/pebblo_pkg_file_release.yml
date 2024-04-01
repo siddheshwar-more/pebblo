@@ -1,0 +1,81 @@
+name: Pebblo release on PyPi
+
+on:
+  push:
+    tags:
+      - "v[0-9].[0-9]+.[0-9]+*"
+env:
+  PYTHON_VERSION: "3.11.x"
+
+jobs:
+  validate-on-test-pypi:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Install the Test PyPi version
+        run: |
+          TAG=$(echo $GITHUB_REF | sed 's/refs\/tags\///')
+          VERSION=$(echo $TAG | sed 's/v//')
+          echo "Using Build Version $VERSION"
+          pip install -i https://test.pypi.org/simple/ pebblo --extra-index-url https://pypi.org/simple
+  build:
+    name: build_distribution
+    runs-on: ubuntu-latest
+    needs: validate-on-test-pypi
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    - name: Install pypa/build
+      run: |
+        TAG=$(echo $GITHUB_REF | sed 's/refs\/tags\///')
+        VERSION=$(echo $TAG | sed 's/v//')
+        echo "Using Build Version $VERSION"
+        PROJECT_FILE_PATH=pyproject.toml
+        VERSION_FILE=$(grep -m 1 "version =" $PROJECT_FILE_PATH | tr -s ' ' | tr -d '"' | tr -d "'" | cut -d' ' -f3) 
+        if [ $VERSION_FILE = $VERSION ]; then
+            pip install build
+            python -m build --wheel
+        else
+            echo "Build Failed due to package version mismatch with github tag and pypoject.toml"
+            exit 1
+        fi
+    - name: Store the distribution packages
+      uses: actions/upload-artifact@v4.2.0
+      with:
+        name: pebblo-package-distributions
+        path: dist/
+
+  release-file-package:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Download all the dists
+        uses: actions/download-artifact@v4.1.1
+        with:
+          name: pebblo-package-distributions
+          path: dist/
+
+      - name: Upload to storage
+        run: |
+          TAG=$(echo $GITHUB_REF | sed 's/refs\/tags\///')
+          VERSION=$(echo $TAG | sed 's/v//')
+          apt update && apt -y upgrade
+          apt -y install jq
+          pip install --no-cache-dir awscli
+          ASSUME_ROLE=$(aws sts assume-role --role-arn arn:aws:iam::{env.AWS_ACCOUNT_ID}:role/cd-devops-ci-crossaccount-role --role-session-name awssession)
+          unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN
+          export AWS_ACCESS_KEY_ID=$(echo $ASSUME_ROLE | jq -r '.Credentials''.AccessKeyId')
+          export AWS_SECRET_ACCESS_KEY=$(echo $ASSUME_ROLE | jq -r '.Credentials''.SecretAccessKey')
+          export AWS_SESSION_TOKEN=$(echo $ASSUME_ROLE | jq -r '.Credentials''.SessionToken') 
+          export AWS_REGION='us-east-1'
+          aws s3 cp -r dist/pebblo-{env.VERSION}-py3-none-any.whl s3://daxa-packages/pebblo/{env.VERSION}/pebblo-{env.VERSION}-py3-none-any.whl --acl public-read
+
+        
