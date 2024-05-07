@@ -22,13 +22,14 @@ jobs:
       - name: Get Release Tag
         run: |
           TAG=$(echo $GITHUB_REF | sed 's/refs\/tags\///')
+          echo "TAG=$(echo $TAG)" >> $GITHUB_ENV
           echo "VERSION=$(echo $TAG | sed 's/v//')" >> $GITHUB_ENV
           
       - name: Build base images
         uses: docker/bake-action@v4
         env:
           IMAGE_TAG_SUFFIX: ${{ env.VERSION }}
-          PEBBLO_VERSION: ${{ env.VERSION }}
+          PEBBLO_VERSION: ${{ env.TAG }}
         with:
           workdir: deploy/docker
           targets: base
